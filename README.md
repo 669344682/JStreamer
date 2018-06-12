@@ -1,2 +1,2 @@
 # JStreamer
-JStreamer Advanced Loader
+JMap Loader
