@@ -1,1 +1,2 @@
-# JStreamer3
+# JStreamer
+JStreamer Advanced Loader
