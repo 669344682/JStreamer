@@ -1,5 +1,5 @@
 <meta>
-	<info type="script" name="JStreamer 3" author="CodyJ(L)" description="JStreamer3 Advanced Loader" version="3.0" />
+	<info type="script" name="JStreamer" author="CodyJ(L)" description="JStreamer Advanced Loader" version="3.0" />
 	
 	<script type="client" src="ObjectHandlers/WindsHandler_C.lua" />
 	<script type="client" src="ObjectHandlers/NightHandler_C.lua" />
@@ -10,8 +10,6 @@
 	
 	<script type="client" src="Streamer_C.lua" />
 	<script type="server" src="Streamer_S.lua" />
-	
-	<file src="Images/Loading.png" />
 	
 	<export function="JcreateObject" type="server"/>
 	<export function="JcreateObject" type="client"/>
