@@ -67,7 +67,6 @@ function LoadModel(Name,Model)
 			engineRestoreModel (ModelInfo[Name]['ID'])
 		end
 		
-			CurrentlyLoading = Name
 		
 		ModelInfo[Name]['ID'] = Model        
 	
@@ -82,7 +81,6 @@ function LoadModel(Name,Model)
 		engineReplaceCOL (requestCOL(DefintionTable.Col),Model)
 		
 		
-		CurrentlyLoading = nil
 	end
 end
 
@@ -315,28 +313,6 @@ end
 	addEventHandler( "unLoadObject", root, unloadModel )
 	
 	
-	
-	
-	
-local screenWidth, screenHeight = guiGetScreenSize ( )
-Rotation = 0	
-	
-function createText ( )
-
-	if CurrentlyLoading then
-		Rotation = Rotation + 5
-
-			dxDrawImage ( screenWidth/2-20, screenHeight-100, 40, 40, 'Images/Loading.png', Rotation, 0, 0)
-		
-		dxDrawText ( 'JStreamer Loading\n'..(CurrentlyLoading or ''),  screenWidth/2, screenHeight-100+60,screenWidth/2, screenHeight-100+60, tocolor ( 255, 255, 255, 150 ), 1, "default",'center','center' )
-		
-	end
-end
-
-
-addEventHandler("onClientRender", root, createText) 
-
-
 
 addEventHandler("onClientObjectBreak", resourceRoot,
     function()
