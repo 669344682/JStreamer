@@ -1,2 +1,0 @@
-unloadMap = true
-allowinteriors = false
