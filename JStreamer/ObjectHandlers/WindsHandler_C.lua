@@ -26,7 +26,7 @@ end
 
 JustDone = {}
 
-function moveStuff()
+function swayVegitation()
 	Weather1,Weather2 = getWeather()
 
 	if Weather1 == 8 then
@@ -55,6 +55,6 @@ function moveStuff()
 	end
 end
 
-moveStuff()
+swayVegitation()
 
-setTimer ( moveStuff, 5000, 0)
+setTimer ( swayVegitation, 5000, 0)

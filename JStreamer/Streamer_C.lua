@@ -1,100 +1,83 @@
-debug.sethook(nil)
 ------------------------------
 --- File Loading functions ---
 ------------------------------
 
-TextureCache = {}
-CollisionCache = {}
-ModelCache = {}
-UsingTXD = {}
+Cache = {txd = {},coll = {},dff = {},usingTXD = {},list = {},info = {},defintions = {}}
 
-	function requestCOL(path)
-		if not path then return end
-		
-		CollisionCache[path] = CollisionCache[path] or engineLoadCOL(path)
-		
-		if not CollisionCache[path] then
-			triggerServerEvent ( "Failed", resourceRoot, path )
-		end
-		
-		return CollisionCache[path]
+function requestCOL(path)
+	if path then
+		Cache.coll[path] = Cache.coll[path] or engineLoadCOL(path)
+			if not Cache.coll[path] then
+				triggerServerEvent ( "FailedInLoading", resourceRoot, path ) -- IF FAILED SEND TO SERVER
+			end
+		return Cache.coll[path]
 	end
+end
 	
-	function requestTXD(path,Name)
-		if not path then return end
-		
-		TextureCache[path] = TextureCache[path] or engineLoadTXD(path)
-		
-		UsingTXD[path] = UsingTXD[path] or {}
-		if Name then
-		UsingTXD[path][Name] = true
-		end
-		
-		if not TextureCache[path] then
-			triggerServerEvent ( "Failed", resourceRoot, path )
-		end
-		
-		return TextureCache[path]
-	end
+function requestTXD(path,Name)
+	if path then
+	Cache.txd[path] = Cache.txd[path] or engineLoadTXD(path)
 
-	function requestDFF(path)
-		if not path then return end
-		ModelCache[path] = ModelCache[path] or engineLoadDFF(path)
-		
-		if not ModelCache[path] then
-			triggerServerEvent ( "Failed", resourceRoot, path )
-		end
-		
-		return ModelCache[path]
+		Cache.usingTXD[path] = Cache.usingTXD[path] or {}
+			if Name then
+				Cache.usingTXD[path][Name] = true
+			end
+			
+			if not Cache.txd[path] then
+				triggerServerEvent ( "FailedInLoading", resourceRoot, path ) -- IF FAILED SEND TO SERVER
+			end
+		return Cache.txd[path]
 	end
+end
+
+function requestDFF(path)
+	if path then
+		Cache.dff[path] = Cache.dff[path] or engineLoadDFF(path)
+			if not Cache.dff[path] then
+				triggerServerEvent ( "FailedInLoading", resourceRoot, path ) -- IF FAILED SEND TO SERVER
+			end
+		return Cache.dff[path]
+	end
+end
 	
 -------------------------
 --- Loading functions ---
 -------------------------
-	
-ModelInfo = {}
 
 function LoadModel(Name,Model)
 		
-		ModelInfo[Name] = ModelInfo[Name] or {}
+		Cache.info[Name] = Cache.info[Name] or {}
 		
-		if not ObjectDefintions[Name] then return end
+		if not Cache.defintions[Name] then return end
 		
-		if not (ModelInfo[Name]['ID'] == Model) then
+		if not (Cache.info[Name]['ID'] == Model) then
 
-		if tonumber(ModelInfo[Name]['ID']) then
-			engineRestoreCOL (ModelInfo[Name]['ID'])
-			engineRestoreModel (ModelInfo[Name]['ID'])
+		if tonumber(Cache.info[Name]['ID']) then
+			engineRestoreCOL (Cache.info[Name]['ID'])
+			engineRestoreModel (Cache.info[Name]['ID'])
 		end
 		
-		
-		ModelInfo[Name]['ID'] = Model        
+		Cache.info[Name]['ID'] = Model        
 	
-		local DefintionTable = ObjectDefintions[Name]
+		local DefintionTable = Cache.defintions[Name]
 	
 		engineSetModelLODDistance (Model,math.max(tonumber(DefintionTable.LodDistance),150)) 
 
-		
-		
 		engineImportTXD (requestTXD(DefintionTable.Txd,Name),Model)
 		engineReplaceModel (requestDFF(DefintionTable.Dff),Model,DefintionTable.Alpha)
 		engineReplaceCOL (requestCOL(DefintionTable.Col),Model)
-		
-		
 	end
 end
 
 addEvent( "LoadID", true )
 addEventHandler( "LoadID", root, LoadModel )
 
-ObjectDefintions = {}
 
-ObjectList = {}
 
 for i,v in pairs(getElementsByType('object',resourceRoot)) do
 	local id = getElementID(v) or getElementData(v,'ID')
-		ObjectList[id] = ObjectList[id] or {}
-		ObjectList[id][v] = true
+		Cache.list[id] = Cache.list[id] or {}
+	Cache.list[id][v] = true
 end
 
 
@@ -102,26 +85,13 @@ end
 function JCreateObjectDefinition(Name,DFFLocation,TextureLocation,CollisionLocation,Streaming,Alpha,Cull,Lod,OnA,OffA)
 	if Name then
 	
-	ObjectDefintions[Name] = {}
-	ObjectDefintions[Name].LodDistance = Streaming
-	ObjectDefintions[Name].Col = CollisionLocation
-	ObjectDefintions[Name].Txd = TextureLocation
-	ObjectDefintions[Name].Dff = DFFLocation
-	ObjectDefintions[Name].Alpha = Alpha
-	ObjectDefintions[Name].Cull = Cull
-	ObjectDefintions[Name].LOD = Lod
+	Cache.defintions[Name] = {LodDistance = Streaming,Col = CollisionLocation,Txd = TextureLocation,Dff = DFFLocation,Alpha = Alpha,Cull = Cull,LOD = Lod,On = OnA,Off = Offa}
 	
-	if tonumber(OnA) then
-	ObjectDefintions[Name].On = OnA
-	ObjectDefintions[Name].Off = OffA
-	end
+		--requestCOL(CollisionLocation)
+		requestTXD(TextureLocation)
+		--requestDFF(DFFLocation)
 	
-	
-	requestCOL(CollisionLocation)
-	requestTXD(TextureLocation)
-	requestDFF(DFFLocation)
-	
-		for i,v in pairs(ObjectList[Name] or {}) do
+		for i,v in pairs(Cache.list[Name] or {}) do
 			if isElement(i) then
 				changeObject(i,Name)
 			end
@@ -141,56 +111,51 @@ LODs = {}
 function changeObject(Object,Name)
 	
 
-	if not ObjectDefintions[Name] then
-			ObjectList[Name] = ObjectList[Name] or {}
-				ObjectList[Name][Object] = true
+	if not Cache.defintions[Name] then
+			Cache.list[Name] = Cache.list[Name] or {}
+			Cache.list[Name][Object] = true
 		return
 	end
 	
-	if isElement(Object) and ObjectDefintions[Name] then
+	if isElement(Object) and Cache.defintions[Name] then
 				
-			ObjectList[Name] = ObjectList[Name] or {}
-				ObjectList[Name][Object] = true
+			Cache.list[Name] = Cache.list[Name] or {}
+			Cache.list[Name][Object] = true
 			
 			LoadModel(Name,getElementModel(Object)) -- This is just incase the model did not load previously
 			
-			local DefintionTable = ObjectDefintions[Name] 
+			local DefintionTable = Cache.defintions[Name] 
 			
-				setElementDoubleSided(Object,DefintionTable.Cull)
+			setElementDoubleSided(Object,DefintionTable.Cull)
 			
-					if getLowLODElement(Object) then
-						destroyElement(getLowLODElement(Object)) -- Remove any previous LOD elements
-					end
+		if getLowLODElement(Object) then
+				destroyElement(getLowLODElement(Object)) -- Remove any previous LOD elements
+		end
 			
-						setElementData(Object,'ID',Name)
-						setElementID(Object,Name)
-						
-						
-						
+		setElementData(Object,'ID',Name)
+		setElementID(Object,Name)				
 			
 		if DefintionTable.LOD then 							
 			local LOD = createObject(getElementModel(Object),0,0,0,0,0,0,true)
 			LODs[Name] = LODs[Name] or {}
 			setElementID(LOD,Name)
-				setElementData(LOD,'ID',Name)
-					setLowLODElement(Object,LOD)
-						setElementDoubleSided(LOD,DefintionTable.Cull)
-							setElementDimension(LOD,getElementDimension(Object))
-								setElementCollisionsEnabled(LOD,false)
-								local x,y,z = getElementPosition(Object)
-								local xr,yr,zr = getElementRotation(Object)
-									setElementPosition(LOD,x,y,z)
-									setElementRotation(LOD,xr,yr,zr)
-									end
+			setElementData(LOD,'ID',Name)
+			setLowLODElement(Object,LOD)
+			setElementDoubleSided(LOD,DefintionTable.Cull)
+			setElementDimension(LOD,getElementDimension(Object))
+			setElementCollisionsEnabled(LOD,false)
+			local x,y,z = getElementPosition(Object)
+			local xr,yr,zr = getElementRotation(Object)
+			setElementPosition(LOD,x,y,z)
+			setElementRotation(LOD,xr,yr,zr)
+		end
 						
-	--VegReload()
 	isVegElement(Object)
 	isNightElement(Object)
 	
 		return true
-		
 	end
-	--VegReload()
+
 	isVegElement(Object)
 	isNightElement(Object)
 end
@@ -201,24 +166,23 @@ Objects = {}
 
 function JcreateObject(Name,x,y,z,xr,yr,zr)
 
-		if tonumber(Name) or Model[Name] then
-			triggerServerEvent ( "prepOriginals", resourceRoot,tonumber(Name) or Model[Name])
-			return createObject(tonumber(Name) or Model[Name],x,y,z,xr,yr,zr) 
-		end
+	if tonumber(Name) or getModelFromID(Name) then
+		triggerServerEvent ( "prepOriginals", resourceRoot,tonumber(Name) or getModelFromID(Name))
+		return createObject(tonumber(Name) or getModelFromID(Name),x,y,z,xr,yr,zr) 
+	end
 	
-		if not ModelInfo[Name] then
+	if not Cache.info[Name] then
 		triggerServerEvent ( "PrepID", resourceRoot,Name) -- Attempt to load ID
-		end
+	end
 		
-		if ModelInfo[Name] then 
-			local object = createObject(1899,x,y,z,xr,yr,zr)
-			setElementModel(object,ModelInfo[Name]['ID'])
+	if Cache.info[Name] then 
+		local object = createObject(1899,x,y,z,xr,yr,zr)
+		setElementModel(object,Cache.info[Name]['ID'])
 			
-					Objects[sourceResource] = Objects[sourceResource] or {} 
-					Objects[sourceResource][object] = true
-				--changeObject(object,Name)
-					
-			return object
+		Objects[sourceResource] = Objects[sourceResource] or {} 
+		Objects[sourceResource][object] = true
+			--changeObject(object,Name)
+		return object
 	end
 end
 
@@ -226,25 +190,25 @@ end
 function JsetElementModel(Element,Name) --- SET MODEL
 
 		
-		local id = getElementID(Element)
+	local id = getElementID(Element)
 		
-		if ObjectList[id] then
-			ObjectList[id][Element] = nil
-		end
+	if Cache.list[id] then
+		Cache.list[id][Element] = nil
+	end
 		
-		if tonumber(Name) or Model[Name] then
-			triggerServerEvent ( "prepOriginals", resourceRoot,tonumber(Name) or Model[Name] )
-			return setElementModel(Element,tonumber(Name) or Model[Name])
-		end
+	if tonumber(Name) or getModelFromID(Name) then
+		triggerServerEvent ( "prepOriginals", resourceRoot,tonumber(Name) or getModelFromID(Name) )
+		return setElementModel(Element,tonumber(Name) or getModelFromID(Name))
+	end
 		
 		
-		if not ModelInfo[Name] then
-		triggerServerEvent ( "PrepID", resourceRoot,Name) -- Attempt to load ID
-		end
+	if not Cache.info[Name] then
+	triggerServerEvent ( "PrepID", resourceRoot,Name) -- Attempt to load ID
+	end
 		
-		if ModelInfo[Name] then
-			if ModelInfo[Name]['ID'] then
-			setElementModel(Element,ModelInfo[Name]['ID'])
+	if Cache.info[Name] then
+		if Cache.info[Name]['ID'] then
+			setElementModel(Element,Cache.info[Name]['ID'])
 			changeObject(Element,Name)
 		end
 	end
@@ -255,59 +219,55 @@ end
 ---------------------------
 
 function checkTXD(TXD)
-if UsingTXD[TXD] then
-		for i,v in pairs(UsingTXD[TXD]) do
+	if Cache.usingTXD[TXD] then
+		for i,v in pairs(Cache.usingTXD[TXD]) do
 			if i then 
 				return
 			end
 		end
-		destroyElement(TextureCache[TXD])
-		TextureCache[TXD] = nil
+		destroyElement(Cache.txd[TXD])
+	Cache.txd[TXD] = nil
 	end
 end
 
 
 function unloadModel(Name)
-	
-	if ObjectDefintions[Name] then
-		if ModelInfo[Name] then
+	if Cache.defintions[Name] then
+		if Cache.info[Name] then
 		
-		if ObjectDefintions[Name].Col then
-			if CollisionCache[ObjectDefintions[Name].Col] and ModelCache[ObjectDefintions[Name].Dff] then
-			
-				destroyElement(CollisionCache[ObjectDefintions[Name].Col])
-				CollisionCache[ObjectDefintions[Name].Col] = nil
+			if Cache.defintions[Name].Col then
+				if Cache.coll[Cache.defintions[Name].Col] and Cache.dff[Cache.defintions[Name].Dff] then
 				
-				destroyElement(ModelCache[ObjectDefintions[Name].Dff])
-				ModelCache[ObjectDefintions[Name].Dff] = nil
-				
-				UsingTXD[ObjectDefintions[Name].Txd][Name] = nil
-				
-				checkTXD(ObjectDefintions[Name].Txd)
-			
-			end
-		end
-		
-			for i,v in pairs(LODs[Name] or {}) do
-				if isElement(i) then
-					destroyElement(i)
+					destroyElement(Cache.coll[Cache.defintions[Name].Col])
+					Cache.coll[Cache.defintions[Name].Col] = nil
+					
+					destroyElement(Cache.dff[Cache.defintions[Name].Dff])
+					Cache.dff[Cache.defintions[Name].Dff] = nil
+					
+					Cache.usingTXD[Cache.defintions[Name].Txd][Name] = nil
+					
+					checkTXD(Cache.defintions[Name].Txd)
 				end
 			end
+		
+				for i,v in pairs(LODs[Name] or {}) do
+					if isElement(i) then
+						destroyElement(i)
+					end
+				end
 			
-			if ModelInfo[Name]['ID'] then
-				engineRestoreCOL (ModelInfo[Name]['ID'])
-				engineRestoreModel (ModelInfo[Name]['ID'])
+			if Cache.info[Name]['ID'] then
+				engineRestoreCOL (Cache.info[Name]['ID'])
+				engineRestoreModel (Cache.info[Name]['ID'])
 			end
 			
 			LODs[Name] = nil
-			ModelInfo[Name] = nil
-			ObjectDefintions[Name] = nil
+			Cache.info[Name] = nil
+			Cache.defintions[Name] = nil
 		end
 	end
-	
 	VegReload()
 	NightReload()
-	
 end
 	addEvent( "unLoadObject", true )
 	addEventHandler( "unLoadObject", root, unloadModel )

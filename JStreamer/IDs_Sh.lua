@@ -22111,16 +22111,17 @@ Model = {}
 
 
 if not AllowInteriors then
-InteriorIDs = {}
+	InteriorIDs = {}
 end
 
 
 for i,v in pairs(AvaliableIDS2) do 
-Model[v[2]] = v[1]
+	Model[v[2]] = v[1]
 end
+AvaliableIDS2 = nil
 
 function getModelFromID(ID)
-return Model[ID] 
+	return Model[ID] 
 end
 
 AvaliableIDSB = {}
@@ -22129,10 +22130,10 @@ UsedIDs = {}
 Count = 0
 
 for i,v in pairs(AvaliableIDS) do
-if not InteriorIDs[v[1]] then
-Count = Count+1
-AvaliableIDSB[Count] = v
-end
+	if not InteriorIDs[v[1]] then
+		Count = Count+1
+		AvaliableIDSB[Count] = v
+	end
 end
 
 AvaliableIDS = nil
@@ -22145,12 +22146,12 @@ function getFreeID(IDa)
 		Starting = Starting + 1
 			if not AvaliableIDSB[Starting] then
 				print('JStreamer Error : Out of IDS')
-					return -- Kill off function to prevent spam
-						end
+				return -- Kill off function to prevent spam
+			end
 
 			local ID = AvaliableIDSB[Starting][1]
-				if not UsedIDs[AvaliableIDSB[Starting][1]] then
-					return AvaliableIDSB[Starting][1]
+		if not UsedIDs[AvaliableIDSB[Starting][1]] then
+			return AvaliableIDSB[Starting][1]
 				else
 			return getFreeID(IDa)
 		end

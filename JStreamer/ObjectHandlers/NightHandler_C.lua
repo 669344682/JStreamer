@@ -38,9 +38,8 @@ hour = getTime()
 end
 
 
-function Check2()
+function NightTimeElementCheck()
 
-	
 for i,v in pairs(NightElements) do
 	
 	if not tonumber(ObjectDefintions[i].On) then
@@ -70,4 +69,4 @@ for i,v in pairs(NightElements) do
 	end
 end
 
-setTimer(Check2,1000,0)
+setTimer(NightTimeElementCheck,1000,0)
