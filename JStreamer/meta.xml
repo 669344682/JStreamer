@@ -1,5 +1,5 @@
 <meta>
-	<info type="script" name="JStreamer" author="CodyJ(L)" description="JStreamer Advanced Loader" version="3.1" />
+	<info type="script" name="JStreamer" author="CodyJ(L)" description="JStreamer Advanced Loader" version="3.2" />
 	
 	<script type="client" src="ObjectHandlers/WindsHandler_C.lua" />
 	<script type="client" src="ObjectHandlers/NightHandler_C.lua" />
