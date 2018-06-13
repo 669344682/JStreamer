@@ -1,13 +1,13 @@
-Data = {Assigned = {},Data.ID = {}}
+data = {assigned = {},ID = {}}
 
 ------------------------------
 --- Object Loading functions ---
 ------------------------------
 
 -- If a player failed to load a custom object then it is printed here
-function LoadingFailed(Name)
-	local name = getPlayerName(client)
-	print('JStreamer : '..Name..' Failed For - '..name)
+function LoadingFailed(name)
+	local pname = getPlayerName(client)
+	print('JStreamer : '..name..' Failed For - '..pname)
 end
 
 	addEvent( "FailedInLoading", true )
@@ -16,37 +16,37 @@ end
 	
 	
 -- When an element is created this is triggered,
-function loadObject(Object,Name)
-	if isElement(Object) then
-		if Data.ID[Name] then
-			setElementModel(Object,Data.ID[Name])
-			setElementData(Object,'Data.ID',Name)
-			setElementID(Object,Name)	
+function loadObject(object,name)
+	if isElement(object) then
+		if data.id[name] then
+			setElementModel(object,data.id[name])
+			setElementData(object,'ID',name)
+			setElementID(object,name)	
 		end
-		triggerClientEvent ( root, "LoadObject", root,Object,Name )
+		triggerClientEvent ( root, "LoadObject", root,object,name )
 	end
 end
 
 -- Preps an ID for usage whether it be custom or original.
-function PrepID(Name,Reload)
-	if Name then
+function PrepID(name,reload)
+	if name then
 	
-		if Reload then
-			Data.ID[Name] = nil
-			Data.ID[Name] = Data.ID[Name] or getFreeID()
+		if reload then
+			data.id[name] = nil
+			data.id[name] = data.id[name] or getFreeID()
 				
-			for i,v in pairs(Data.Assigned[Name]) do
+			for i,v in pairs(data.assigned[name]) do
 				if isElement(i) then
-						JsetElementModel(i,Name)
+					JsetElementModel(i,name)
 				end
 			end
 		end
 		
-		Data.ID[Name] = Data.ID[Name] or getFreeID()
-		UsedIDs[Data.ID[Name]] = Name
-		Data.Assigned[Name] = Data.Assigned[Name] or {}
-		triggerClientEvent ( root, "LoadID", root,Name,Data.ID[Name] ) -- Need this
-		return Data.ID[Name]
+		data.id[name] = data.id[name] or getFreeID()
+		idused[data.id[name]] = name
+		data.assigned[name] = data.assigned[name] or {}
+		triggerClientEvent ( root, "LoadID", root,name,data.id[name] ) -- Need this
+		return data.id[name]
 	end
 end
 
@@ -58,12 +58,12 @@ addEventHandler( "PrepID", resourceRoot, PrepID)
 --- Original functions ---
 --------------------------
 	
--- When the streamer attempts to create a SA object it'll run it through here, this reverts any elements using said Data.ID and reassigns them allowing the original Data.ID to be used.
-function loadOriginal(Data.ID)
-	if UsedIDs[Data.ID] then
-		if not UsedIDs[Data.ID] == 'Yes' then
-			PrepID(UsedIDs[Data.ID],true)
-			UsedIDs[Data.ID] = 'Yes'
+-- When the streamer attempts to create a SA object it'll run it through here, this reverts any elements using said data.id and reassigns them allowing the original data.id to be used.
+function loadOriginal(data.id)
+	if idused[data.id] then
+		if not idused[data.id] == 'Yes' then
+			PrepID(idused[data.id],true)
+			idused[data.id] = 'Yes'
 		end
 	end
 end
@@ -75,49 +75,49 @@ end
 --- Object functions ---
 ------------------------
 
-Objects = {}
+objects = {}
 
-function JcreateObject(Name,x,y,z,xr,yr,zr) -- Create object function
+function JcreateObject(name,x,y,z,xr,yr,zr) -- Create object function
 			 
-	if tonumber(Name) or getModelFromID(Name) then
-		loadOriginal(tonumber(Name) or getModelFromID(Name))
+	if tonumber(name) or getModelFromID(name) then
+		loadOriginal(tonumber(name) or getModelFromID(name))
 	end
 
-		local TheID = tonumber(Name) or getModelFromID(Name) or PrepID(Name)
+		local objectid = tonumber(name) or getModelFromID(name) or PrepID(name)
 			
-		Data.ID[Name] = TheID
+		data.id[name] = objectid
 			
-	if tonumber(TheID) then
-			local object = createObject(TheID,x or 0,y or 0,z or 0,xr or 0,yr or 0,zr or 0)
+	if tonumber(objectid) then
+			local object = createObject(objectid,x or 0,y or 0,z or 0,xr or 0,yr or 0,zr or 0)
 			
 		if object then 
-			loadObject(object,Name)
-			Data.Assigned[Name] = Data.Assigned[Name] or {}
-			Data.Assigned[Name][object] = true
-			Objects[sourceResource] = Objects[sourceResource] or {} 
-			Objects[sourceResource][object] = true
+			loadObject(object,name)
+			data.assigned[name] = data.assigned[name] or {}
+			data.assigned[name][object] = true
+			objects[sourceResource] = objects[sourceResource] or {} 
+			objects[sourceResource][object] = true
 			return object
 		end
 	end
 end
 
-function JsetElementModel(Element,Name) -- Set object model (Should technically be setObjectModel but for legacy purposes Element is kept)
+function JsetElementModel(element,name) -- Set object model (Should technically be setObjectModel but for legacy purposes Element is kept)
 			
-	if tonumber(Name) or getModelFromID(Name) then
-		loadOriginal(tonumber(Name) or getModelFromID(Name))
+	if tonumber(name) or getModelFromID(name) then
+		loadOriginal(tonumber(name) or getModelFromID(name))
 	end
 			
-		local currentID = getElementID(Element) or getElementData(Element,'Data.ID')
+		local currentID = getElementID(element) or getElementData(element,'data.id')
 			
-	if Data.Assigned[currentID] then
-		Data.Assigned[currentID][Element] = nil
+	if data.assigned[currentID] then
+		data.assigned[currentID][element] = nil
 	end
 			
-		Data.ID[Name] = tonumber(Name) or getModelFromID(Name) or PrepID(Name)	
-		setElementModel(Element,Data.ID[Name])	
-		Data.Assigned[Name][object] = true	
-		loadObject(Element,Name)
-	return Element
+		data.id[name] = tonumber(name) or getModelFromID(name) or PrepID(name)	
+		setElementModel(element,data.id[name])	
+		data.assigned[name][object] = true	
+		loadObject(element,name)
+	return element
 end
 
 -----------------------
@@ -127,7 +127,7 @@ end
 -- Unloads the original map, if interiors are enabled it attempts to keep them (Check IDs_Sh for the other Interior related stuff if you want to try to get this working properly)
 -- Only work around is to use my interior resource which contains all of the DFFs COLs and TXDs from SAs interiors (Unlisted at the moment, needs work)
 if unloadMap then
-	local dimenision = AllowInteriors and 0 or nil
+	local dimenision = allowinteriors and 0 or nil
 	
 	for i=550,20000 do
 		removeWorldModel(i,10000,0,0,0,dimenision)
@@ -138,19 +138,19 @@ if unloadMap then
 end
 	
 	
-	function unloadModel(Name)
-	triggerClientEvent ( root, "unLoadObject", root,Name )
+	function unloadModel(name)
+	triggerClientEvent ( root, "unLoadObject", root,name )
 	end
 	
 addEventHandler ( "onResourceStop", root, -- If you stop the resource 'Vice City' all elements created from the resource 'Vice City' will be destoryed.
 function ( resource )
-	if Objects[resource] then
-		for i,v in pairs(Objects[resource]) do
+	if objects[resource] then
+		for i,v in pairs(objects[resource]) do
 			if isElement(i) then
 				destroyElement(i)
 			end
 		end
-	Objects[resource] = nil
+	objects[resource] = nil
 	end
 end 
 )

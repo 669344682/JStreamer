@@ -7,9 +7,7 @@
 	<script type="client" src="Settings/settings_C.lua" />
 	
 	<script type="shared" src="IDs_Sh.lua" />
-	
-	<script type="client" src="Streamer_C.lua" />
-	<script type="server" src="Streamer_S.lua" />
+	<script type="shared" src="Streamer_Sh.lua" />
 	
 	<export function="JcreateObject" type="server"/>
 	<export function="JcreateObject" type="client"/>
