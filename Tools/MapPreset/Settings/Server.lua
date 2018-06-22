@@ -1,1 +1,0 @@
-setMapName("MapName")
