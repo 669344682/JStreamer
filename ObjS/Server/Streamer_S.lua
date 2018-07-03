@@ -111,6 +111,7 @@ function JsetElementModel(element,name) -- Set object model (Should technically 
 			
 		data.id[name] = tonumber(name) or getModelFromID(name) or PrepID(name)	
 		setElementModel(element,data.id[name])	
+		data.assigned[name] = data.assigned[name] or {}
 		data.assigned[name][object] = true	
 		loadObject(element,name)
 	return element
