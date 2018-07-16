@@ -12,9 +12,6 @@
 	
 	<script type="server" src="Server/Streamer_S.lua" />
 
-
-
-
 	<export function="JcreateObject" type="server"/>
 	<export function="JcreateObject" type="client"/>
 	
@@ -28,5 +25,4 @@
 	<export function="unloadModel" type="client"/>
 	
 	<export function="isElementBroken" type="server"/>
-	
 </meta>

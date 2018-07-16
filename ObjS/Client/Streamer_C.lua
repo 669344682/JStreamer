@@ -88,6 +88,7 @@ function JCreateObjectDefinition(name,dffLocation,txdLocation,collLocation,strea
 		requestTXD(txdLocation)
 		requestDFF(dffLocation)
 	
+
 		for i,v in pairs(cache.list[name] or {}) do
 			if isElement(i) then
 				changeObject(i,name)
@@ -113,8 +114,6 @@ function changeObject(object,name)
 				
 			cache.list[name] = cache.list[name] or {}
 			cache.list[name][object] = true
-			
-			LoadModel(name,getElementModel(object)) -- This is just incase the model did not load previously
 			
 			local definitionTable = cache.defintions[name] 
 			
@@ -169,7 +168,7 @@ function JcreateObject(name,x,y,z,xr,yr,zr)
 			
 		Objects[sourceResource] = Objects[sourceResource] or {} 
 		Objects[sourceResource][object] = true
-			--changeObject(object,name)
+
 		return object
 	end
 end
@@ -284,3 +283,13 @@ addEventHandler ( "onClientResourceStop", root,
 		end
    end 
 )
+
+
+addEventHandler( "onClientElementStreamIn", getRootElement( ),
+    function ( )
+        if getElementType( source ) == "object" then
+			LoadModel(getElementID(source),getElementModel(source))
+        end
+    end
+);
+
