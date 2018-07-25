@@ -46,3 +46,6 @@ JSPLoader.lua (Object loader)
 ## Settings
 
 `CWaterData.lua (Water Data)`
+
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/BlueJayL)
