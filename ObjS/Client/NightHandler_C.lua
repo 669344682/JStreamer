@@ -52,6 +52,7 @@ for i,v in pairs(nightElements) do
 				for ia,va in pairs(v) do
 					if isElement(va) then
 						setObjectScale(va,0)
+						setElementAlpha(va,0)
 					end
 				end
 			end
@@ -61,6 +62,7 @@ for i,v in pairs(nightElements) do
 				for ia,va in pairs(v) do
 					if isElement(va) then
 						setObjectScale(va,1)
+						setElementAlpha(va,255)
 						end
 					end
 				end
