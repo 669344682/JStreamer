@@ -123,18 +123,27 @@ end
 
 -- Unloads the original map, if interiors are enabled it attempts to keep them (Check IDs_Sh for the other Interior related stuff if you want to try to get this working properly)
 -- Only work around is to use my interior resource which contains all of the DFFs COLs and TXDs from SAs interiors (Unlisted at the moment, needs work)
-if unloadMap then
-	local dimenision = allowinteriors and 0 or nil
-	
-	for i=550,20000 do
-		removeWorldModel(i,10000,0,0,0,dimenision)
-		removeWorldModel(i,10000,0,0,0,13)
-	end	
-		setOcclusionsEnabled(false)
-	setWaterLevel ( -100000,true,false )
+
+function loadOrUnloadMap()
+		local dimenision = allowinteriors and 0 or nil
+	if unloadMap then
+		for i=550,20000 do
+			removeWorldModel(i,10000,0,0,0,dimenision)
+			removeWorldModel(i,10000,0,0,0,13)
+		end	
+			setOcclusionsEnabled(false)
+		setWaterLevel ( -100000,true,false )
+	else
+		for i=550,20000 do
+			restoreWorldModel(i,10000,0,0,0,dimenision)
+			restoreWorldModel(i,10000,0,0,0,13)
+		end	
+		setOcclusionsEnabled(true)
+		resetWaterLevel()
+	end
 end
-	
-	
+loadOrUnloadMap()
+
 	function unloadModel(name)
 	triggerClientEvent ( root, "unLoadObject", root,name )
 	end
@@ -173,4 +182,10 @@ addEventHandler( "onElementStopSync", resourceRoot, stopSync )
 	
 function isElementBroken(object)
 	return data.broken[object]
+end
+
+function getResourceElements(resource)
+	if data.objects[resource] then
+		return data.objects[resource]
+	end
 end

@@ -25,4 +25,6 @@
 	<export function="unloadModel" type="client"/>
 	
 	<export function="isElementBroken" type="server"/>
+	<export function="getResourceElements" type="server"/>
+	<export function="changeUnloadSetting" type="server"/>
 </meta>
