@@ -6,17 +6,17 @@ function isNightElement(object)
 
 local id = getElementID(object)
 
-if type(cache.defintions[id]) == 'table' then
-	if tonumber(cache.defintions[id].on) then
-		nightElements[id] = nightElements[id] or {}
-		off[id] = off[id] or false
-		nightElements[id][#nightElements[id]+1] = object
-		
-					if getLowLODElement(object) then
-						nightElements[id][#nightElements[id]+1] = getLowLODElement(object)
+	if type(cache.defintions[id]) == 'table' then
+		if tonumber(cache.defintions[id].on) then
+			nightElements[id] = nightElements[id] or {}
+			off[id] = off[id] or false
+			nightElements[id][#nightElements[id]+1] = object
+			if getLowLODElement(object) then
+				nightElements[id][#nightElements[id]+1] = getLowLODElement(object)
 			end
 		end
 	end
+	CheckNightElements()
 end
 
 function NightReload()
@@ -70,3 +70,33 @@ for i,v in pairs(nightElements) do
 end
 
 setTimer(NightTimeElementCheck,1000,0)
+
+
+
+
+
+function CheckNightElements()
+
+	for i,v in pairs(nightElements) do
+	
+	if isInTimeRange(tonumber(cache.defintions[i].on),tonumber(cache.defintions[i].off)) then
+		off[i] = true
+			for ia,va in pairs(v) do
+				if isElement(va) then
+					setObjectScale(va,0)
+				end
+			end
+		end
+	else
+		off[i] = false
+		for ia,va in pairs(v) do
+			if isElement(va) then
+				setObjectScale(va,1)
+			end
+		end
+	end
+end
+
+
+setTimer(CheckNightElements,60000,0)
+setTimer(CheckNightElements,1500,1)
