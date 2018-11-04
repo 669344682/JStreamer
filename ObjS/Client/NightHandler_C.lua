@@ -4,23 +4,23 @@ nightElements = {}
 
 function isNightElement(object)
 
-local id = getElementID(object)
+	local id = getElementID(object)
 
 	if type(cache.defintions[id]) == 'table' then
 		if tonumber(cache.defintions[id].on) then
 			nightElements[id] = nightElements[id] or {}
-			off[id] = off[id] or false
-			nightElements[id][#nightElements[id]+1] = object
+			off[id] = off[id]
+			nightElements[id][(#nightElements[id])+1] = object
 			if getLowLODElement(object) then
 				nightElements[id][#nightElements[id]+1] = getLowLODElement(object)
 			end
 		end
 	end
-	CheckNightElements()
 end
 
 function NightReload()
 	nightElements = {}
+	off = {}
 	for i,v in pairs(getElementsByType('object',resourceRoot)) do
 		isNightElement(v)
 	end
@@ -28,7 +28,7 @@ end
 
 
 function isInTimeRange(start,stop)
-hour = getTime()
+	hour = getTime()
 
 	if start > stop then
 		return (hour < start and hour > stop)
@@ -40,29 +40,27 @@ end
 
 function NightTimeElementCheck()
 
-for i,v in pairs(nightElements) do
-	
-	if not tonumber(cache.defintions[i].on) then
-		NightReload()
-	else
-	
-	if isInTimeRange(tonumber(cache.defintions[i].on),tonumber(cache.defintions[i].off)) then
-		if not (off[i] == 1) then
-			off[i] = 1
-				for ia,va in pairs(v) do
-					if isElement(va) then
-						setObjectScale(va,0)
-						setElementAlpha(va,0)
+	for i,v in pairs(nightElements) do
+		if not tonumber(cache.defintions[i].on) then
+			NightReload()
+		else
+			if isInTimeRange(tonumber(cache.defintions[i].on),tonumber(cache.defintions[i].off)) then
+				if not (off[i] == 1) then
+					off[i] = 1
+					for ia,va in pairs(v) do
+						if isElement(va) then
+							setObjectScale(va,0)
+							setElementAlpha(va,0)
+						end
 					end
 				end
-			end
-	else
-		if (off[i] == 2) then
-			off[i] = 2
-				for ia,va in pairs(v) do
-					if isElement(va) then
-						setObjectScale(va,1)
-						setElementAlpha(va,255)
+			else
+				if (off[i] == 2) then
+					off[i] = 2
+					for ia,va in pairs(v) do
+						if isElement(va) then
+							setObjectScale(va,1)
+							setElementAlpha(va,255)
 						end
 					end
 				end
