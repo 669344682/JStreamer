@@ -47,8 +47,8 @@ for i,v in pairs(nightElements) do
 	else
 	
 	if isInTimeRange(tonumber(cache.defintions[i].on),tonumber(cache.defintions[i].off)) then
-		if not off[i] then
-			off[i] = true
+		if not (off[i] == 1) then
+			(off[i] = 1)
 				for ia,va in pairs(v) do
 					if isElement(va) then
 						setObjectScale(va,0)
@@ -56,8 +56,8 @@ for i,v in pairs(nightElements) do
 				end
 			end
 	else
-		if off[i] then
-			off[i] = false
+		if (off[i] == 2) then
+			(off[i] = 2)
 				for ia,va in pairs(v) do
 					if isElement(va) then
 						setObjectScale(va,1)
@@ -73,30 +73,3 @@ setTimer(NightTimeElementCheck,1000,0)
 
 
 
-
-
-function CheckNightElements()
-
-	for i,v in pairs(nightElements) do
-	
-	if isInTimeRange(tonumber(cache.defintions[i].on),tonumber(cache.defintions[i].off)) then
-		off[i] = true
-			for ia,va in pairs(v) do
-				if isElement(va) then
-					setObjectScale(va,0)
-				end
-			end
-		end
-	else
-		off[i] = false
-		for ia,va in pairs(v) do
-			if isElement(va) then
-				setObjectScale(va,1)
-			end
-		end
-	end
-end
-
-
-setTimer(CheckNightElements,60000,0)
-setTimer(CheckNightElements,1500,1)
