@@ -82,7 +82,7 @@ end
 function JCreateObjectDefinition(name,dffLocation,txdLocation,collLocation,streamingDistance,alphaFlag,cullFlag,lodFlag,turnOn,turnOff)
 	if name then
 	
-	cache.defintions[name] = {drawdistance = streamingDistance,col = collLocation,txd = txdLocation,dff = dffLocation,alpha = alphaFlag,cull = cullFlag,lod = lodFlag,on = turnOn,off = turnOff}
+	cache.defintions[name] = {drawdistance = streamingDistance,col = collLocation,txd = txdLocation,dff = dffLocation,alpha = alphaFlag,cull = cullFlag,lod = lodFlag,on = tonumber(turnOn),off = tonumber(turnOff)}
 	
 		requestCOL(collLocation)
 		requestTXD(txdLocation)
@@ -96,6 +96,7 @@ function JCreateObjectDefinition(name,dffLocation,txdLocation,collLocation,strea
 		end
 	end
 	triggerServerEvent ( "PrepID", resourceRoot,name)
+	reloadStuff()
 end
 
 ------------------------
@@ -139,12 +140,11 @@ function changeObject(object,name)
 			local xr,yr,zr = getElementRotation(object)
 			setElementPosition(lod,x,y,z)
 			setElementRotation(lod,xr,yr,zr)
-		end					
+		end			
+		isNightElement(object)
+		isVegElement(object)
 		return true
 	end
-
-	isVegElement(object)
-	isNightElement(object)
 end
 	addEvent( "LoadObject", true )
 	addEventHandler( "LoadObject", root, changeObject )
@@ -168,7 +168,8 @@ function JcreateObject(name,x,y,z,xr,yr,zr)
 			
 		Objects[sourceResource] = Objects[sourceResource] or {} 
 		Objects[sourceResource][object] = true
-
+		isNightElement(object)
+		isVegElement(object)
 		return object
 	end
 end
@@ -197,6 +198,8 @@ function JsetElementModel(element,name) --- SET model
 			changeObject(element,name)
 		end
 	end
+	isNightElement(element)
+	isVegElement(element)
 end
 
 ---------------------------
@@ -250,8 +253,6 @@ function unloadModel(name)
 			cache.defintions[name] = nil
 		end
 	end
-	VegReload()
-	NightReload()
 end
 	addEvent( "unLoadObject", true )
 	addEventHandler( "unLoadObject", root, unloadModel )

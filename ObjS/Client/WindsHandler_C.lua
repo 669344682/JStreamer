@@ -33,7 +33,7 @@ function swayVegitation()
 	if (weather1 == 8) or (weather2 == 8) then
 		multiplier = 10
 		else
-		mulitplier = 1
+		multiplier = 1
 	end
 	
 	local xr,yr,zr = getWindVelocity()
